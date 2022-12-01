@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body
+        {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+<script>
+
+const NUMOBSTACULOS = 10;
+const ESPACIO = 150;
+const OFFSETINI = 150;
+const ANCHURATOTAL = window.innerWidth - 200;
+const ALTURATOTAL = window.innerHeight - 18;
+const W = 87;
+const A = 65;
+const S = 83;
+const D = 68;
+
+const VELOCIDAD = 5;
+
+const bolaWidth = 50;
+const bolaHeight = 50;
+const bolaY = 50;
+const bolaX = 50;
+
+let x;
+let y;
+let idInterval ;
+let intervaloTimer;
+let cowboy1;
+let arrancado = false;
+let iniciarJuego = false;
+let timerArrancado = false;
+let movimientos = 0;
+let direccion ;
+let ultimoTeclado ;
+let linea;
+let idObs = 0;
+let i = 1;
+let pantallaInicial;
+
+let arrayUltimaPosi = [];
+let arrayObstaculos = [];
+arrayObstaculos[0] = new Array();
+arrayObstaculos[1] = new Array();
+
+class Obstaculo
+{
+    width ;
+    height ;
+    y ;
+    x ;
+
+    constructor(width,height,y,x)
+        {
+            this.width = 15;
+            this.height = height;
+            this.x = x;
+            this.y = y;
+            Object.seal(this);
+        }
+        
+        getX() {return this.x;}
+        setX(n) {this.x = n}
+        
+        getWidth() {return this.width;}
+        setWidth(n) {this.width = n}
+
+        getHeight() {return this.height;}
+        setHeight(n) {this.height = n}
+
+        getY() {return this.y;}
+        setY(n) {this.y = n}
+}
+
+class Cowboy
+{
+    widthCB ;
+    heightCB ;
+    yCB ;
+    xCB;
+
+    constructor(widthCB,heightCB,yCB,xCB)
+        {
+            this.widthCB = widthCB;
+            this.heightCB = heightCB;
+            this.xCB = xCB;
+            this.yCB = yCB;
+            Object.seal(this);
+        }
+        
+        getX() {return this.xCB;}
+        setX(n) {this.xCB = n}
+        
+        getWidth() {return this.widthCB;}
+        setWidth(n) {this.widthCB = n}
+
+        getHeight() {return this.heightCB;}
+        setHeight(n) {this.heightCB = n}
+
+        getY() {return this.yCB;}
+        setY(n) {this.yCB = n}
+}
+
+// Función que crea el div contenedor
+function CrearDivContenedor() 
+{
+    let div = document.createElement("div");
+    div.setAttribute("Id", "contenedorDiv");
+    div.style.width = (ANCHURATOTAL ) + "px";
+    div.style.height = (ALTURATOTAL) + "px";
+    // div.style.backgroundColor = "#ffffba";
+    document.body.appendChild(div);
+}
+
+function CrearArrayObstaculos()
+{
+    if (NUMOBSTACULOS > 0 )
+    {
+        let anchorX = window.innerWidth / NUMOBSTACULOS;
+        for (let i = 0; i < NUMOBSTACULOS ; i++) 
+        {
+            //Control para que la primera coordenada x del primer obstaculo sea 0 y la del siguiente 
+            //el resultado de la division entre la pantalla y el numero de obstaculos, diviendo el div
+            //en partes iguales en funcion del numero de obstaculos.
+            controlPrimerAnchor = i==0? (anchorX = OFFSETINI) : (anchorX = OFFSETINI + ((ANCHURATOTAL-100) / NUMOBSTACULOS) * i);
+
+            //Creacion del obstaculo con offsetTop = 0 es decir Y = 0.
+            let obstaculo = new Obstaculo(this.width,this.height,-30,anchorX)
+
+            //Tamaño vertical del obstaculo random de 0 al maximo de la pantalla
+            obstaculo.setHeight((Math.floor(Math.random() * (ALTURATOTAL)))); 
+            
+            arrayObstaculos[0].push(obstaculo);
+
+            //Ancla del obstaculo de abajo = al tamaño del obstaculo superior + el espacio
+            yObstaculoBot = (obstaculo.getHeight() + ESPACIO);
+
+            //Control del tamaño del obstaculo de abajo para que no salga por abajo de la pantalla
+            obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - ESPACIO;
+
+            let obstaculoAbajo = new Obstaculo(obstaculo.getWidth(),obstaculoBotHeight,yObstaculoBot,anchorX);
+            arrayObstaculos[1].push(obstaculoAbajo);
+        }
+    }
+    return arrayObstaculos;
+}
+
+function EstiloObstaculos()
+{
+    arrayObstaculos.forEach(element => 
+    {
+        element.forEach(value => 
+        {
+            linea = document.createElement("p");    
+            linea.setAttribute("Id", idObs += 1);
+            // document.getElementById("contenedorDiv").appendChild(linea);
+            document.body.appendChild(linea);
+            linea.style.width = value.getWidth() + 'px';
+            linea.style.height = value.getHeight() + 'px';
+            linea.style.backgroundColor ='rgb(175, 63, 39)';
+            linea.style.position = "absolute";
+            linea.style.left = value.getX() + 'px';                 
+            if ((value.getY() > (ALTURATOTAL)))
+            {
+                linea.style.top = ALTURATOTAL + 'px';
+            }
+            else
+            {
+                linea.style.top = value.getY() + 'px';
+            }     
+        });
+    });
+}
+
+function CrearCowboy() 
+{
+    cowboy1 = new Cowboy(bolaWidth,bolaHeight,bolaX,bolaY);
+    let bola = document.createElement("div");
+    bola.setAttribute("Id", "bola");
+    
+    bola.style.width = cowboy1.getWidth() + 'px';
+    bola.style.height = cowboy1.getHeight() + 'px';
+    bola.style.borderRadius = "50%";
+    bola.style.backgroundColor = "blue";
+    bola.style.position = "absolute";
+    bola.style.top = cowboy1.getY() + 'px';
+    bola.style.left = cowboy1.getX() + 'px'; 
+
+    let widthDivContenedor = document.getElementById("contenedorDiv").clientWidth;
+    let heigtDivContenedor = document.getElementById("contenedorDiv").clientHeight;
+
+    // document.getElementById("contenedorDiv").appendChild(bola);
+    document.body.appendChild(bola);
+    return cowboy1;
+}
+
+function LeerTecla(valorLeidoTeclado) 
+{ 
+    if (valorLeidoTeclado.keyCode == A ||
+        valorLeidoTeclado.keyCode == W ||
+        valorLeidoTeclado.keyCode == D ||
+        valorLeidoTeclado.keyCode == S) 
+    {
+        direccion = valorLeidoTeclado.keyCode;
+        
+        if (!iniciarJuego) 
+        {
+            ArrancarJuego();
+            iniciarJuego = true;
+        }
+    } 
+    return movimientos += 1;
+}
+        
+function ArrancarJuego() 
+{
+    if (!arrancado) {
+
+        idInterval = setInterval(() => 
+        {   
+
+        if (!timerArrancado) 
+        {
+            contadorTexto();
+        }
+        timerArrancado = true;
+       
+        Mover();
+        fechaTexto();
+            
+        }, 5);
+        
+        arrancado = true;
+ 
+    }
+}
+
+function Mover()
+{
+      
+    colisiones(cowboy1);
+
+    if(bola.offsetLeft >= (window.innerWidth - bolaWidth) || bola.offsetTop >= (window.innerHeight - bolaWidth) || bola.offsetLeft < 0 || bola.offsetTop < 0 )
+    {          
+        arrancado = false
+        gameOver();
+        clearInterval(idInterval);
+    }   
+    else 
+    {
+        switch (direccion)  
+        {
+        case A:
+        bola.style.left = (bola.offsetLeft - 1) + "px";
+        cowboy1.setX(bola.offsetLeft); 
+            break;
+        case W:
+        bola.style.top = (bola.offsetTop - 1) + "px";
+        cowboy1.setY(bola.offsetTop); 
+            break;
+        case D:
+        bola.style.left = (bola.offsetLeft + 1) + "px";
+        cowboy1.setX(bola.offsetLeft); 
+            break;
+        case S:
+        bola.style.top = (bola.offsetTop + 1) + "px";
+        cowboy1.setY(bola.offsetTop); 
+            break;
+        }
+    }
+    return bola;
+}
+
+function gameOver()
+{
+    clearInterval(idInterval);
+    clearInterval(intervaloTimer);
+}
+
+function ultimaPosicionCowBoy()
+{
+    let posX = cowboy1.getX();
+    let posY = cowboy1.getY();
+
+    return arrayUltimaPosi = [posX,posY];
+}
+
+function colisiones()
+{
+    pFinJuego = document.getElementById('finJuego');
+    let winX =  pFinJuego.offsetLeft;
+    let winY =  pFinJuego.offsetTop;
+    let winHeight = pFinJuego.clientHeight;
+    let winwidth = pFinJuego.clientWidth;
+    ultimaPosicionCowBoy();
+    x = arrayUltimaPosi[0]; 
+    y = arrayUltimaPosi[1];
+    
+    arrayObstaculos.forEach(element => 
+        {
+            element.forEach(obstaculo =>
+            {
+            //Esquina superior izquierda OBSTACULO eje X
+            let obsX = obstaculo.getX() ;
+            //Esquina superior izquierda OBSTACULO eje Y
+            let obsY = obstaculo.getY() ;
+            
+            if(x < obsX + obstaculo.getWidth() && x + cowboy1.getWidth() > obsX && y < obsY + obstaculo.getHeight() && y  > obsY)
+            {
+                arrancado = false;
+                gameOver();
+            }
+            });     
+        });    
+
+        if (x < winX + winwidth && x + cowboy1.getWidth() > winX && y < winY + winHeight && y + winHeight > winY)
+        {   
+        
+            atenuarObstaculos();
+            arrancado = false;
+            gameOver();
+            parrafoGanar();
+        }
+}
+
+function crearFinalJuego()
+{
+    let finJuego = document.createElement("p");
+    finJuego.setAttribute("Id", "finJuego");
+    // document.getElementById("contenedorDiv").appendChild(finJuego);
+    document.body.appendChild(finJuego);
+    finJuego.style.width = 50 + "px";
+    finJuego.style.height= 50 + "px";
+    finJuego.style.backgroundColor = "blue";
+    finJuego.style.top = 88 + '%';
+    finJuego.style.left =  93.5 + '%';
+    finJuego.style.position = "absolute";
+}
+
+function parrafoGanar()
+{
+    let parrafoGanar = document.createElement("h1");
+    parrafoGanar.setAttribute("Id", "parrafoGanar");
+    document.body.appendChild(parrafoGanar);  
+    parrafoGanar.style.backgroundColor = "blue";
+    parrafoGanar.innerHTML = "Has ganado con " + movimientos + " movimiento/s";
+    parrafoGanar.style.position = "absolute";
+    parrafoGanar.style.textAlign="center";
+    parrafoGanar.style.top = "50%"
+    parrafoGanar.style.left = "30%"
+}
+
+function atenuarObstaculos()
+{
+    arrayObstaculos.forEach(element => 
+    {
+        element.forEach(value => 
+        {
+            document.getElementById(i).style.backgroundColor='rgb(175, 63, 39,0.5)';
+            i+=1;
+        });
+    });
+}
+
+function CreardivFecha()
+{
+    let parrafoFecha = document.createElement("h2");
+    parrafoFecha.setAttribute("Id", "parrafoFecha");
+    document.body.appendChild(parrafoFecha);  
+    parrafoFecha.style.top = "0%"
+    parrafoFecha.style.left = "90%";
+    parrafoFecha.style.position = "absolute";
+}
+
+function fechaTexto()
+{
+    parrafoFecha.innerHTML = ' ';
+    let fecha = new Date();
+    parrafoFecha.innerHTML = fecha.toLocaleTimeString();
+}
+
+function CrearDivContador()
+{
+    let parrafoTimer = document.createElement("h2");
+    parrafoTimer.setAttribute("Id", "parrafoTimer");
+    document.body.appendChild(parrafoTimer);  
+    parrafoTimer.style.top = "50%"
+    parrafoTimer.style.left = "97%";
+    parrafoTimer.style.position = "absolute";
+}
+
+function contadorTexto()
+{
+    
+    let contador = 0;
+    intervaloTimer = setInterval(() => 
+    {
+        parrafoTimer.innerHTML = contador;
+        contador +=1;
+    }, 1000);
+  
+}
+
+function inciarJuego()
+{
+    CrearDivContenedor();
+    CrearArrayObstaculos();
+    EstiloObstaculos();
+    CrearCowboy();
+    crearFinalJuego();
+    CreardivFecha();
+    CrearDivContador();
+    
+    //Listener para pulsacion de tecla .
+    document.addEventListener("keydown",LeerTecla);
+}
+
+function crearPantallaInicio()
+{
+    pantallaInicial = document.createElement("div");
+    pantallaInicial.setAttribute("Id", "pantallaInicial");
+    document.body.appendChild(pantallaInicial);  
+    pantallaInicial.style.position = "absolute"
+    pantallaInicial.style.display = "flex";
+    pantallaInicial.style.flexDirection = "column";
+    pantallaInicial.style.top = '45%';
+    pantallaInicial.style.left = '40%';
+
+    
+    let titulo = document.createElement("h2");
+    titulo.setAttribute("Id", "titulo");
+    document.getElementById("pantallaInicial").appendChild(titulo);  
+    titulo.innerHTML = "Juego del cowboy";
+    
+
+    // titulo.style.top = '5000px';
+    // titulo.style.left = '50%';
+
+    let buttonInicio = document.createElement("button");
+    buttonInicio.setAttribute("Id", "buttonInicio");
+    document.getElementById("pantallaInicial").appendChild(buttonInicio);  
+
+    buttonInicio.addEventListener("click",() =>{ inciarJuego();cambiarEstiloInicio(); });
+
+}
+
+function cambiarEstiloInicio()
+{
+    pantallaInicial.style.top = '45%';
+    pantallaInicial.style.left = '40%';
+    title = document.getElementById('titulo');
+    title.style.color = 'rgb(17, 153, 226, 0.5)';
+    
+}
+
+this.onload = () => 
+{
+    crearPantallaInicio();
+}
+    
+</script>
+
+
+<body>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laberinto Paso a Paso</title>
+</head>
+<script>
+    //Constantes 
+    const arrayBolas = [];
+    const arrayPosicionesBola = [];
+    const LEFT = 37;
+    const UP = 38;
+    const RIGHT = 39;
+    const DOWN = 40;
+    const NUMOBSTACULOS = 50;
+
+    //Width de la bola y del obstaculo
+    const BOLAW =50;
+    const ROBST = 10;
+
+    //Variables de contadores e intervalos
+    let iniciado ;
+    let intervalo;
+    let intervaloTimer;
+    let intervalo2;
+    let direccion = new String;
+    let arrancado = false;
+    let parar = false;
+    let iniciarJuego = false;
+    let idInterval;
+    let idIntervaloMovimiento;
+    let velocidad = 15;
+    let timerCreacion;
+
+
+    //Clase obstaculo
+    class Obstaculo
+    {
+        posX ;
+        posY ;
+        
+        constructor(posX,posY)
+        {
+            this.posX = posX;
+            this.posY = posY;
+            Object.seal(this);
+        }
+
+        getPosX() {return this.posX;}
+        setPosX(n) {this.posX = n}
+        
+        getPosY() {return this.posY;}
+        setPosY(n) {this.posY = n}
+       
+    }
+    
+    // Función que crea el div contenedor
+    function CrearDivContenedor() 
+    {
+        let div = document.createElement("div");
+        div.setAttribute("Id", "contenedorDiv");
+    
+        div.style.width = (window.innerWidth - 30) + "px";
+        div.style.height = (window.innerHeight - 30) + "px";
+        div.style.backgroundColor = "#ffffba";
+
+        div.innerHTML = window.innerWidth + " " + window.innerHeight;
+    
+        document.body.appendChild(div);
+    }
+
+    //Funcion que crea el p contador
+    function crearDivContador()
+    {
+        let divContador = document.createElement("p");
+        divContador.setAttribute("Id", "divContador");
+        divContador.style.backgroundColor = "#ffffba";
+        divContador.style.bottom= 0;
+        divContador.style.right= 0;
+        divContador.style.position = "absolute";
+        divContador.style.marginRight = "20px";
+        document.getElementById("contenedorDiv").appendChild(divContador);
+       
+    }
+    
+    // función que calcula un número aleatorio entre un minimo y un maximo
+    function NumeroAleatorio(minimo, maximo) 
+    {
+        return parseInt((Math.random() * maximo - minimo) + minimo);
+    }
+
+    // Función que crea una bola en una posición aleatoria del navegador
+    function CrearBola() 
+    {
+        let bola = document.createElement("div");
+        bola.setAttribute("Id", "bola");
+      
+        bola.style.width = "50px";
+        bola.style.height = "50px";
+        bola.style.borderRadius = "50%";
+        bola.style.backgroundColor = "blue";
+        bola.style.position = "absolute";
+
+        let widthDivContenedor = document.getElementById("contenedorDiv").clientWidth;
+        let heigtDivContenedor = document.getElementById("contenedorDiv").clientHeight;
+
+        console.log(widthDivContenedor);
+        console.log(heigtDivContenedor);
+
+        let randomX;
+        let randomY;
+        let randomAltura;
+        let randomAnchura; 
+        let choque = false;
+        //CONTROL CREACION DE BOLAS ENCIMA DE OBSTACULOS
+        
+        randomX = NumeroAleatorio(30, widthDivContenedor-30);
+        randomY = NumeroAleatorio(30,heigtDivContenedor-30);
+
+        //Compara la generacion random de las coordenadas de la bola 
+        //con cada elemento del array de obstaculos
+        arrayBolas.forEach(el => 
+        {     
+            if (randomX < el.getPosX() + ROBST && randomX + BOLAW > el.getPosX() 
+            && randomY < el.getPosY() + 25 && randomY + 35 > el.getPosY())
+            {
+                choque = true;
+            }
+        });
+        
+        //Si el choque es falso en la creacion se crea la bola y se devuelve el valor
+        if (choque == false)
+        {
+            randomAltura = randomY + "px";                
+            randomAnchura = randomX + "px";
+            bola.style.top = randomAltura;
+            bola.style.left = randomAnchura;   
+            document.getElementById("contenedorDiv").appendChild(bola);
+            return bola;
+
+        }else CrearBola();
+        
+    }
+    
+
+    // Funcion que crea un array con un numero n de bolas, con dos parametros, x e y
+    function CrearArrayNBolas(n)
+    {
+        let widthDivContenedor = document.getElementById("contenedorDiv").clientWidth;
+        let heigtDivContenedor = document.getElementById("contenedorDiv").clientHeight;
+        
+
+        for (let i = 0; i <= n; i++) 
+        {
+            let obstaculo = new Obstaculo();
+            
+            //Posiciones X e Y seteadas con el setter 
+            obstaculo.setPosX(NumeroAleatorio(0,widthDivContenedor-75));
+            obstaculo.setPosY(NumeroAleatorio(0, heigtDivContenedor-75));  
+           
+            arrayBolas.push(obstaculo);
+        }
+        return arrayBolas;
+    }
+
+    //Recorre el array de bolas y llama a la funcion addPoint para crear los obstaculos
+    function addBolas()
+    {
+        var index = 0;
+        arrayBolas.forEach(element => 
+        {
+            let x = element.getPosX();
+            let y = element.getPosY();
+            index += 1;
+            addPoint(index,x,y);
+            });
+        }    
+        
+    //Funcion que añade los obstaculos
+    function addPoint(index,x,y)
+        {
+            let p = document.createElement("p");
+            p.setAttribute("id","p",index);
+            p.style.width = "10px";
+            p.style.height = "10px";
+            p.style.borderRadius = "50%";
+            p.style.backgroundColor = "black";
+            p.style.position = "absolute";
+            p.style.top = y + "px";
+            p.style.left = x + "px";
+             
+            document.getElementById("contenedorDiv").appendChild(p);
+        }
+    
+    //Lee la tecla pulsada y le asigna una dirección
+    function LeerTecla(valorLeidoTeclado) {
+        if (valorLeidoTeclado.keyCode == LEFT ||
+            valorLeidoTeclado.keyCode == UP ||
+            valorLeidoTeclado.keyCode == RIGHT ||
+            valorLeidoTeclado.keyCode == DOWN) {
+
+            direccion = valorLeidoTeclado.keyCode;
+
+            if (!iniciarJuego) {
+                ArrancarJuego();
+                iniciarJuego = true;
+            }
+        }
+    }
+        
+function ArrancarJuego() {
+
+// arrancamos el setInterval, solamente la primera vez
+if (!arrancado) {
+
+// timeout que arranca el juego en la primera pulsación
+// de teclado para no perder el segundo del setInterval de abajo
+    let idInter = setTimeout(() => 
+    {
+        clearInterval(idInterval);
+        velocidad = velocidad - 1;
+
+        idInterval = setInterval(() => {
+            Mover();
+        }, velocidad);
+    },1);
+
+    idIntervaloMovimiento = setInterval(() => 
+    {
+
+        clearInterval(idInterval);
+        clearTimeout(idInter);
+
+        velocidad = velocidad - 1;
+
+        idInterval = setInterval(() => 
+        {
+            Mover();
+            console.log("Este");
+        },velocidad);
+    },1000);
+
+    arrancado = true;
+ 
+}
+}
+
+    
+   
+    //Funcion que elimina el intervalo en caso de que este creado
+    function limpiarIntervalo(intervalo)
+    {     
+        clearInterval(intervalo);    
+    }
+    
+    //Controla que la bola no se salga de la pantalla llamando a la funcion gameOver si ocurre, además
+    // de eliminar el intervalo
+    function Mover()
+    {
+      
+        capturarPosicionesBola();
+        colisionesBuenas()
+
+        if(bola.offsetLeft >= (window.innerWidth - 75) || bola.offsetTop >= (window.innerHeight - 75) || bola.offsetLeft < 0 || bola.offsetTop < 0 )
+        {          
+            arrancado = false
+            gameOver();
+            clearInterval(idInterval);
+        }   
+        
+        else 
+        {
+            switch (direccion) {
+            case LEFT:
+            bola.style.left = (bola.offsetLeft - 1) + "px";
+                break;
+            case UP:
+            bola.style.top = (bola.offsetTop - 1) + "px";
+                break;
+            case RIGHT:
+            bola.style.left = (bola.offsetLeft + 1) + "px";
+                break;
+            case DOWN:
+            bola.style.top = (bola.offsetTop + 1) + "px";
+                break;
+
+            default:
+                break;
+        }
+        }
+        
+        
+    }
+    //Captura y devuelve el tiempo en su ejecucion
+    function capturarTiempoCreacion()
+    {
+        timerCreacion = new Date();
+        return timerCreacion;
+    } 
+
+    //Devuelve la diferencia del tiempo entre la ejecucion y su lanzamiento
+    function capturarTiempoFinal()
+    {
+        timerFinal = new Date();
+        timerTotal = timerFinal - timerCreacion ;
+        tiempoJugado = Math.floor((timerTotal/1000) % 60);
+        return tiempoJugado;
+    }
+
+    
+    
+    //Crea un array con las posiciones de la bola y guarda el último valor [x,y] en "ultimaPosicion"
+    function capturarPosicionesBola()
+    {
+        ultimaPosicion = [bola.offsetLeft,bola.offsetTop];
+        return ultimaPosicion;
+    }
+
+    //Control de colisiones
+    function colisionesBuenas()
+    {
+        arrayBolas.forEach(element => 
+            {
+                //Esquina superior izquierda BOLA eje X
+                let x = ultimaPosicion[0,0];
+                //Esquina superior izquierda BOLA eje Y
+                let y = ultimaPosicion[0,1];
+
+                //Esquina superior izquierda OBSTACULO eje X
+                let obsX = element.getPosX() ;
+                //Esquina superior izquierda OBSTACULO eje Y
+                let obsY = element.getPosY() ;
+
+                //Compara la esquina superior izquierda de ambos cuadrados comprobanndo que : 
+                //Si la esquina de la "bola" en el eje x es menor que la suma de la esquina del
+                //obstaculo del eje x significa que estan en colision en el eje x
+                //Si la esquina de la "bola" en el eje x + la anchura del vertice es mayor que la posicion 
+                // de la esquina superior izquierda del obstaculo, significa que esta en colision en el eje x
+                //Ocurre de la misma manera en el otro eje.
+                if(x < obsX + ROBST && x + BOLAW > obsX && y < obsY + 25 && y + 35 > obsY)
+                {
+                    arrancado = false;
+                    clearInterval(idInterval);
+                    clearInterval(intervalo2);
+                    gameOver(capturarTiempoFinal());
+                }
+             
+            });    
+
+            
+    }
+
+    //Funcion que crea un p que indica el final del juego.
+    function gameOver(tiempo)
+    {
+        let finalizarPartida = document.createElement("parrafoGameOver");
+        finalizarPartida.style.textAlign = "center";
+        finalizarPartida.style.marginTop = "50px";
+        finalizarPartida.style.fontSize = "29px";
+        finalizarPartida.style.display = "flex";
+        finalizarPartida.style.flexDirection = "column";
+        finalizarPartida.innerText = "La partida ha finalizado con: "+ tiempo + " segundos de duracion."
+        document.getElementById("contenedorDiv").appendChild(finalizarPartida);
+        document.removeEventListener("keydown",LeerTecla);
+        iniciado = true;
+        limpiarIntervalo(idInterval);
+        limpiarIntervalo(idIntervaloMovimiento);
+       
+    }
+
+    //Funcion que inicializa un timer con un intervalo de un segundo (Contador de segundos)
+    function timer()
+    {
+        if (iniciado == false)
+        {
+            let n = 1;
+            let l = document.getElementById("divContador");
+            intervaloTimer = window.setInterval(function(){
+            l.innerHTML = n;
+            n++;
+            },1000);
+        }
+        iniciado = true;
+        return iniciado;
+    }
+   
+    //Creacion del elemento html que contiene la fecha y hora
+    function fechaHora()
+    {
+        let divHora = document.createElement("p");
+        divHora.setAttribute("Id", "divHora");
+        divHora.style.backgroundColor = "#ffffba";
+        divHora.style.top= 0;
+        divHora.style.right= 0;
+        divHora.style.position = "absolute";
+        divHora.style.marginRight = "20px";
+        document.getElementById("contenedorDiv").appendChild(divHora);
+
+       //Crea el intervalo (intervaloHora) que se ejecuta cada 1000 ms reflejando la fecha en el formato indicado
+        intervaloHora = window.setInterval(function()
+        {
+            let fecha = new Date();
+            divHora.innerHTML = fecha.getHours()  + " : " + fecha.getMinutes()  + " : " + fecha.getSeconds()  ;
+            ;
+        },1000);   
+    }
+    
+    //Evento onload que se ejecutará cuando el DOM esta complemtamente cargado
+    this.onload = () => 
+    {
+        // Creamos el div contenedor
+        CrearDivContenedor();  
+        crearDivContador();
+
+        //Crea un array con un numero N de bolas ( posiciones x,y)
+        CrearArrayNBolas(NUMOBSTACULOS);
+
+        //Añade las bolas en funcion de sus coordenadas dadas por el array de CrearArrayBolas()
+        addBolas();
+
+       // Crea la bola 
+       CrearBola();
+       
+
+        //Creacion y control del elemento html de la hora 
+        fechaHora();
+        
+        //Listener para pulsacion de tecla .
+        document.addEventListener("keydown",LeerTecla);
+    }
+    
+</script>
+<body>
+   <div>
+        <p id= "contador"></p>
+   </div> 
+</body>
+</html>
+
+
+
