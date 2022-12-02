@@ -59,12 +59,12 @@ class Obstaculo
     y ;
     x ;
 
-    constructor(width,height,y,x)
+    constructor(height,y,x)
         {
             this.width = 15;
             this.height = height;
-            this.x = x;
             this.y = y;
+            this.x = x;
             Object.seal(this);
         }
         
@@ -134,7 +134,7 @@ function CrearArrayObstaculos()
             controlPrimerAnchor = i==0? (anchorX = OFFSETINI) : (anchorX = OFFSETINI + ((ANCHURATOTAL-100) / NUMOBSTACULOS) * i);
 
             //Creacion del obstaculo con offsetTop = 0 es decir Y = 0.
-            let obstaculo = new Obstaculo(this.width,this.height,-30,anchorX)
+            let obstaculo = new Obstaculo(this.height,-30,anchorX)
 
             //Tamaño vertical del obstaculo random de 0 al maximo de la pantalla
             obstaculo.setHeight((Math.floor(Math.random() * (ALTURATOTAL)))); 
@@ -147,7 +147,7 @@ function CrearArrayObstaculos()
             //Control del tamaño del obstaculo de abajo para que no salga por abajo de la pantalla
             obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - ESPACIO;
 
-            let obstaculoAbajo = new Obstaculo(obstaculo.getWidth(),obstaculoBotHeight,yObstaculoBot,anchorX);
+            let obstaculoAbajo = new Obstaculo(obstaculoBotHeight,yObstaculoBot,anchorX);
             arrayObstaculos[1].push(obstaculoAbajo);
         }
     }
@@ -160,15 +160,14 @@ function EstiloObstaculos()
     {
         element.forEach(value => 
         {
-            linea = document.createElement("p");    
+            linea = document.createElement("div");    
             linea.setAttribute("Id", idObs += 1);
-            // document.getElementById("contenedorDiv").appendChild(linea);
             document.body.appendChild(linea);
             linea.style.width = value.getWidth() + 'px';
             linea.style.height = value.getHeight() + 'px';
             linea.style.backgroundColor ='rgb(175, 63, 39)';
             linea.style.position = "absolute";
-            linea.style.left = value.getX() + 'px';                 
+            linea.style.left = value.getX() + 'px';             
             if ((value.getY() > (ALTURATOTAL)))
             {
                 linea.style.top = ALTURATOTAL + 'px';
@@ -198,18 +197,22 @@ function CrearCowboy()
     let widthDivContenedor = document.getElementById("contenedorDiv").clientWidth;
     let heigtDivContenedor = document.getElementById("contenedorDiv").clientHeight;
 
-    // document.getElementById("contenedorDiv").appendChild(bola);
     document.body.appendChild(bola);
     return cowboy1;
 }
 
 function LeerTecla(valorLeidoTeclado) 
 { 
+    let incremento = 0;
     if (valorLeidoTeclado.keyCode == A ||
         valorLeidoTeclado.keyCode == W ||
         valorLeidoTeclado.keyCode == D ||
         valorLeidoTeclado.keyCode == S) 
     {
+       if(direccion!=valorLeidoTeclado.keyCode)
+       {
+        incremento = 1;
+       }
         direccion = valorLeidoTeclado.keyCode;
         
         if (!iniciarJuego) 
@@ -218,7 +221,7 @@ function LeerTecla(valorLeidoTeclado)
             iniciarJuego = true;
         }
     } 
-    return movimientos += 1;
+    movimientos += incremento;
 }
         
 function ArrancarJuego() 
@@ -249,7 +252,10 @@ function Mover()
       
     colisiones(cowboy1);
 
-    if(bola.offsetLeft >= (window.innerWidth - bolaWidth) || bola.offsetTop >= (window.innerHeight - bolaWidth) || bola.offsetLeft < 0 || bola.offsetTop < 0 )
+    if( bola.offsetLeft >= (window.innerWidth - bolaWidth) || 
+        bola.offsetTop >= (window.innerHeight - bolaWidth) ||
+        bola.offsetLeft < 0 ||
+        bola.offsetTop < 0 )
     {          
         arrancado = false
         gameOver();
@@ -314,7 +320,10 @@ function colisiones()
             //Esquina superior izquierda OBSTACULO eje Y
             let obsY = obstaculo.getY() ;
             
-            if(x < obsX + obstaculo.getWidth() && x + cowboy1.getWidth() > obsX && y < obsY + obstaculo.getHeight() && y  > obsY)
+            if( x < obsX + obstaculo.getWidth() &&
+                x + cowboy1.getWidth() > obsX &&
+                y < obsY + obstaculo.getHeight() &&
+                y + cowboy1.getHeight() > obsY  )
             {
                 arrancado = false;
                 gameOver();
@@ -322,7 +331,10 @@ function colisiones()
             });     
         });    
 
-        if (x < winX + winwidth && x + cowboy1.getWidth() > winX && y < winY + winHeight && y + winHeight > winY)
+        if (x < winX + winwidth &&
+            x + cowboy1.getWidth() > winX &&
+            y < winY + winHeight &&
+            y + winHeight > winY)
         {   
         
             atenuarObstaculos();
@@ -336,7 +348,6 @@ function crearFinalJuego()
 {
     let finJuego = document.createElement("p");
     finJuego.setAttribute("Id", "finJuego");
-    // document.getElementById("contenedorDiv").appendChild(finJuego);
     document.body.appendChild(finJuego);
     finJuego.style.width = 50 + "px";
     finJuego.style.height= 50 + "px";
