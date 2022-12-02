@@ -154,6 +154,7 @@ function CrearArrayObstaculos()
     return arrayObstaculos;
 }
 
+//Recorre el array obstaculos asginando un estilo a cada uno
 function EstiloObstaculos()
 {
     arrayObstaculos.forEach(element => 
@@ -180,6 +181,7 @@ function EstiloObstaculos()
     });
 }
 
+//Crea y da estilo a cowboy
 function CrearCowboy() 
 {
     cowboy1 = new Cowboy(bolaWidth,bolaHeight,bolaX,bolaY);
@@ -201,6 +203,7 @@ function CrearCowboy()
     return cowboy1;
 }
 
+//Funcion que lee la pulsacion en el listener del window 
 function LeerTecla(valorLeidoTeclado) 
 { 
     let incremento = 0;
@@ -209,6 +212,7 @@ function LeerTecla(valorLeidoTeclado)
         valorLeidoTeclado.keyCode == D ||
         valorLeidoTeclado.keyCode == S) 
     {
+    //Comprueba si la direccion es igual a la anterior introducida sumando 1 si no lo es y 0 si es igual
        if(direccion!=valorLeidoTeclado.keyCode)
        {
         incremento = 1;
@@ -224,6 +228,7 @@ function LeerTecla(valorLeidoTeclado)
     movimientos += incremento;
 }
         
+//Inicia el intervalo que mueve la bola
 function ArrancarJuego() 
 {
     if (!arrancado) {
@@ -247,6 +252,7 @@ function ArrancarJuego()
     }
 }
 
+//Control de movimiento
 function Mover()
 {
       
@@ -286,12 +292,14 @@ function Mover()
     return bola;
 }
 
+//Finaliza los intervalos
 function gameOver()
 {
     clearInterval(idInterval);
     clearInterval(intervaloTimer);
 }
 
+//Captura la ulltima posicion de la bola devolviendo un array
 function ultimaPosicionCowBoy()
 {
     let posX = cowboy1.getX();
@@ -300,6 +308,7 @@ function ultimaPosicionCowBoy()
     return arrayUltimaPosi = [posX,posY];
 }
 
+//Control de colisiones
 function colisiones()
 {
     pFinJuego = document.getElementById('finJuego');
@@ -307,6 +316,7 @@ function colisiones()
     let winY =  pFinJuego.offsetTop;
     let winHeight = pFinJuego.clientHeight;
     let winwidth = pFinJuego.clientWidth;
+    //Esquina superior izquierda cowboy
     ultimaPosicionCowBoy();
     x = arrayUltimaPosi[0]; 
     y = arrayUltimaPosi[1];
@@ -320,6 +330,7 @@ function colisiones()
             //Esquina superior izquierda OBSTACULO eje Y
             let obsY = obstaculo.getY() ;
             
+            //Colision con los obstaculos
             if( x < obsX + obstaculo.getWidth() &&
                 x + cowboy1.getWidth() > obsX &&
                 y < obsY + obstaculo.getHeight() &&
@@ -344,6 +355,7 @@ function colisiones()
         }
 }
 
+//Elemento html fin de juego
 function crearFinalJuego()
 {
     let finJuego = document.createElement("p");
@@ -357,6 +369,7 @@ function crearFinalJuego()
     finJuego.style.position = "absolute";
 }
 
+//Mensaje que popea al ganar la partida
 function parrafoGanar()
 {
     let parrafoGanar = document.createElement("h1");
@@ -435,6 +448,7 @@ function inciarJuego()
     document.addEventListener("keydown",LeerTecla);
 }
 
+//Pantalla de inicio con boton para iniciar el juego
 function crearPantallaInicio()
 {
     pantallaInicial = document.createElement("div");
@@ -453,8 +467,6 @@ function crearPantallaInicio()
     titulo.innerHTML = "Juego del cowboy";
     
 
-    // titulo.style.top = '5000px';
-    // titulo.style.left = '50%';
 
     let buttonInicio = document.createElement("button");
     buttonInicio.setAttribute("Id", "buttonInicio");
@@ -464,6 +476,7 @@ function crearPantallaInicio()
 
 }
 
+//Cambia el estilo del titulo mandandolo al fondo y atenuandolo
 function cambiarEstiloInicio()
 {
     pantallaInicial.style.top = '45%';
