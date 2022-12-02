@@ -26,8 +26,8 @@ const D = 68;
 
 const VELOCIDAD = 5;
 
-const bolaWidth = 50;
-const bolaHeight = 50;
+const bolaWidth = 20;
+const bolaHeight = 20;
 const bolaY = 50;
 const bolaX = 50;
 
@@ -145,7 +145,7 @@ function CrearArrayObstaculos()
             yObstaculoBot = (obstaculo.getHeight() + ESPACIO);
 
             //Control del tamaño del obstaculo de abajo para que no salga por abajo de la pantalla
-            obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - ESPACIO;
+            obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - ESPACIO + 17;
 
             let obstaculoAbajo = new Obstaculo(obstaculoBotHeight,yObstaculoBot,anchorX);
             arrayObstaculos[1].push(obstaculoAbajo);
