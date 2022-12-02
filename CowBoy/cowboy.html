@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        body
-        {
-            background-color: aquamarine;
-        }
     </style>
 </head>
 <script>
@@ -431,8 +427,6 @@ function contadorTexto()
         parrafoTimer.innerHTML = contador;
         contador +=1;
     }, 1000);
-
-  
 }
 
 function inciarJuego()
@@ -482,17 +476,21 @@ function crearPantallaInicio()
 //Cambia el estilo del titulo mandandolo al fondo y atenuandolo
 function cambiarEstiloInicio()
 {
-    title = document.getElementById('titulo')
-    title.style.display = 'flex';
-    title.style.flexDirection - 'column';
-    title.style.position = 'absolute';
-    title.style.margin = 'auto';
-    title.style.left =' 50 + "px"';
-    title.style.color = 'white';
-    title.style.fontSize = "100px";
+    pantallaInicial = pantallaInicial;
+    title = document.getElementById('titulo');
+    buttonInicio = document.getElementById('buttonInicio');
+    pantallaInicial.appendChild(title);
+    pantallaInicial.appendChild(buttonInicio);
+    
+    pantallaInicial.style.position = 'absolute';
+    pantallaInicial.style.top = '10%';
+    pantallaInicial.style.left = '25%';
 
-    button = document.getElementById("buttonInicio");
-    button.style.visibility = "hidden";
+    pantallaInicial.style.color = '#FEC751';
+    pantallaInicial.style.fontSize = "60px";
+    
+
+    buttonInicio.style.visibility = 'hidden';
 
     document.body.style.backgroundImage = "url('./background.jpg')";
     document.body.style.backgroundRepeat = 'no-repeat';
