@@ -13,7 +13,7 @@
     </style>
 </head>
 <script>
-
+const COLOROBSTACULOS = 'rgb(210, 124, 48)';
 const NUMOBSTACULOS = 10;
 const ESPACIO = 150;
 const OFFSETINI = 150;
@@ -26,8 +26,8 @@ const D = 68;
 
 const VELOCIDAD = 5;
 
-const bolaWidth = 20;
-const bolaHeight = 20;
+const bolaWidth = 50;
+const bolaHeight = 50;
 const bolaY = 50;
 const bolaX = 50;
 
@@ -46,6 +46,7 @@ let linea;
 let idObs = 0;
 let i = 1;
 let pantallaInicial;
+let contador ;
 
 let arrayUltimaPosi = [];
 let arrayObstaculos = [];
@@ -131,7 +132,7 @@ function CrearArrayObstaculos()
             //Control para que la primera coordenada x del primer obstaculo sea 0 y la del siguiente 
             //el resultado de la division entre la pantalla y el numero de obstaculos, diviendo el div
             //en partes iguales en funcion del numero de obstaculos.
-            controlPrimerAnchor = i==0? (anchorX = OFFSETINI) : (anchorX = OFFSETINI + ((ANCHURATOTAL-100) / NUMOBSTACULOS) * i);
+            controlPrimerAnchor = i==0? (anchorX = OFFSETINI) : (anchorX = OFFSETINI + (ANCHURATOTAL / NUMOBSTACULOS) * i);
 
             //Creacion del obstaculo con offsetTop = 0 es decir Y = 0.
             let obstaculo = new Obstaculo(this.height,-30,anchorX)
@@ -166,7 +167,7 @@ function EstiloObstaculos()
             document.body.appendChild(linea);
             linea.style.width = value.getWidth() + 'px';
             linea.style.height = value.getHeight() + 'px';
-            linea.style.backgroundColor ='rgb(175, 63, 39)';
+            linea.style.backgroundColor =COLOROBSTACULOS;
             linea.style.position = "absolute";
             linea.style.left = value.getX() + 'px';             
             if ((value.getY() > (ALTURATOTAL)))
@@ -191,7 +192,6 @@ function CrearCowboy()
     bola.style.width = cowboy1.getWidth() + 'px';
     bola.style.height = cowboy1.getHeight() + 'px';
     bola.style.borderRadius = "50%";
-    bola.style.backgroundColor = "blue";
     bola.style.position = "absolute";
     bola.style.top = cowboy1.getY() + 'px';
     bola.style.left = cowboy1.getX() + 'px'; 
@@ -376,7 +376,7 @@ function parrafoGanar()
     parrafoGanar.setAttribute("Id", "parrafoGanar");
     document.body.appendChild(parrafoGanar);  
     parrafoGanar.style.backgroundColor = "blue";
-    parrafoGanar.innerHTML = "Has ganado con " + movimientos + " movimiento/s";
+    parrafoGanar.innerHTML = "Has ganado con " + movimientos + " movimiento/s " + "y " + contador + " segundos";
     parrafoGanar.style.position = "absolute";
     parrafoGanar.style.textAlign="center";
     parrafoGanar.style.top = "50%"
@@ -389,7 +389,7 @@ function atenuarObstaculos()
     {
         element.forEach(value => 
         {
-            document.getElementById(i).style.backgroundColor='rgb(175, 63, 39,0.5)';
+            document.getElementById(i).style.backgroundColor='rgb(240, 231, 231,0.5)';
             i+=1;
         });
     });
@@ -425,12 +425,13 @@ function CrearDivContador()
 function contadorTexto()
 {
     
-    let contador = 0;
+    contador = 0;
     intervaloTimer = setInterval(() => 
     {
         parrafoTimer.innerHTML = contador;
         contador +=1;
     }, 1000);
+
   
 }
 
@@ -441,9 +442,10 @@ function inciarJuego()
     EstiloObstaculos();
     CrearCowboy();
     crearFinalJuego();
-    CreardivFecha();
     CrearDivContador();
     
+    CreardivFecha();
+   
     //Listener para pulsacion de tecla .
     document.addEventListener("keydown",LeerTecla);
 }
@@ -457,8 +459,8 @@ function crearPantallaInicio()
     pantallaInicial.style.position = "absolute"
     pantallaInicial.style.display = "flex";
     pantallaInicial.style.flexDirection = "column";
-    pantallaInicial.style.top = '45%';
-    pantallaInicial.style.left = '40%';
+    pantallaInicial.style.top = '35%';
+    pantallaInicial.style.left = '44%';
 
     
     let titulo = document.createElement("h2");
@@ -470,6 +472,7 @@ function crearPantallaInicio()
 
     let buttonInicio = document.createElement("button");
     buttonInicio.setAttribute("Id", "buttonInicio");
+    buttonInicio.innerHTML = "COMENZAR A JUGAR ";
     document.getElementById("pantallaInicial").appendChild(buttonInicio);  
 
     buttonInicio.addEventListener("click",() =>{ inciarJuego();cambiarEstiloInicio(); });
@@ -479,10 +482,25 @@ function crearPantallaInicio()
 //Cambia el estilo del titulo mandandolo al fondo y atenuandolo
 function cambiarEstiloInicio()
 {
-    pantallaInicial.style.top = '45%';
-    pantallaInicial.style.left = '40%';
-    title = document.getElementById('titulo');
-    title.style.color = 'rgb(17, 153, 226, 0.5)';
+    title = document.getElementById('titulo')
+    title.style.display = 'flex';
+    title.style.flexDirection - 'column';
+    title.style.position = 'absolute';
+    title.style.margin = 'auto';
+    title.style.left =' 50 + "px"';
+    title.style.color = 'white';
+    title.style.fontSize = "100px";
+
+    button = document.getElementById("buttonInicio");
+    button.style.visibility = "hidden";
+
+    document.body.style.backgroundImage = "url('./background.jpg')";
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundSize = 'cover';
+
+    document.getElementById('bola').style.backgroundImage ="url('./cowboy.png')";
+    document.getElementById('bola').style.backgroundRepeat = 'no-repeat';
+    document.getElementById('bola').style.backgroundSize = 'cover';
     
 }
 
