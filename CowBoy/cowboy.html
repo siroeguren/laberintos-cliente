@@ -412,12 +412,16 @@ function parrafoGanar()
     let parrafoGanar = document.createElement("h1");
     parrafoGanar.setAttribute("Id", "parrafoGanar");
     document.body.appendChild(parrafoGanar);  
-    parrafoGanar.style.backgroundColor = "blue";
     parrafoGanar.innerHTML = "Has ganado con " + movimientos + " movimiento/s " + "y " + contador + " segundos";
     parrafoGanar.style.position = "absolute";
+    parrafoGanar.style.top = "50%";
+    parrafoGanar.style.left = "35%";
     parrafoGanar.style.textAlign="center";
+    parrafoGanar.style.fontFamily="Impact, fantasy";
+    parrafoGanar.style.color="green";
     parrafoGanar.style.top = "50%"
     parrafoGanar.style.left = "30%"
+    setTimeout(() => {(ganar = confirm('Has GANADO, enhorabuena, quieres jugar otra vez ?')?window.location = "./cowboy.html":window.alert("Vuelve pronto"),2500)});
 }
 
 function atenuarObstaculos()
