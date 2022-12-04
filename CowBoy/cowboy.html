@@ -13,7 +13,7 @@
 //Constantes
 const COLOROBSTACULOS = 'rgb(210, 124, 48)';
 const NUMOBSTACULOS = 10;
-const ESPACIO = 150;
+const GAP = 150;
 const OFFSETINI = 150;
 const ANCHURATOTAL = window.innerWidth - 200;
 const ALTURATOTAL = window.innerHeight - 18;
@@ -21,7 +21,7 @@ const W = 87;
 const A = 65;
 const S = 83;
 const D = 68;
-const VELOCIDAD = 5;
+const VELOCIDAD = 1;
 const bolaWidth = 50;
 const bolaHeight = 50;
 const bolaY = 50;
@@ -138,11 +138,11 @@ function CrearArrayObstaculos()
             
             arrayObstaculos[0].push(obstaculo);
 
-            //Ancla del obstaculo de abajo = al tamaño del obstaculo superior + el espacio
-            yObstaculoBot = (obstaculo.getHeight() + ESPACIO);
+            //Ancla del obstaculo de abajo = al tamaño del obstaculo superior + el GAP
+            yObstaculoBot = (obstaculo.getHeight() + GAP);
 
             //Control del tamaño del obstaculo de abajo para que no salga por abajo de la pantalla
-            obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - ESPACIO + 17;
+            obstaculoBotHeight = ALTURATOTAL - obstaculo.getHeight() - GAP + 17;
 
             let obstaculoAbajo = new Obstaculo(obstaculoBotHeight,yObstaculoBot,anchorX);
             arrayObstaculos[1].push(obstaculoAbajo);
@@ -231,7 +231,9 @@ function LeerTecla(valorLeidoTeclado)
             ArrancarJuego();
             iniciarJuego = true;
         }
-    } 
+    }
+    
+
     movimientos += incremento;
 }
         
@@ -251,7 +253,7 @@ function ArrancarJuego()
             Mover();
             fechaTexto();
             
-        }, 5);
+        },VELOCIDAD);
         
         arrancado = true;
  
@@ -264,7 +266,7 @@ function obstaculosDinamicos(cowboy1)
     x = arrayUltimaPosi[0];
     obstaculo = document.getElementById(k);
 
-    if (x == obstaculo.offsetLeft)
+    if (x == obstaculo.offsetLeft && k <= NUMOBSTACULOS)
     {  
         k += 1;
         document.getElementById(k).style.visibility = 'visible';
@@ -290,7 +292,7 @@ function Mover()
         arrancado = false
         gameOver();
         clearInterval(idInterval);
-        setTimeout(() => { window.alert("Has chocado con algo, has perdido!") }, 2500);
+        setTimeout(() => {(reintentar = confirm('Has chocado, reintentar?')?window.location = "./cowboy.html":window.alert("Buen intento"),2500)});
     }   
     else 
     {
@@ -363,7 +365,8 @@ function colisiones()
             {
                 arrancado = false;
                 gameOver();
-                setTimeout(() => { window.alert("Has chocado !! Has perdido!") }, 2500);
+                setTimeout(() => {(reintentar = confirm('Has chocado, reintentar?')?window.location = "./cowboy.html":window.alert("Buen intento"),2500)});
+                
             }
             });     
         });    
