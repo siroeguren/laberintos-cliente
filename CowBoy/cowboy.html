@@ -238,19 +238,18 @@ function LeerTecla(valorLeidoTeclado)
 //Inicia el intervalo que mueve la bola
 function ArrancarJuego() 
 {
-    if (!arrancado) {
-
+    if (!arrancado) 
+    {
         idInterval = setInterval(() => 
         {   
 
-        if (!timerArrancado) 
-        {
-            contadorTexto();
-        }
-        timerArrancado = true;
-       
-        Mover();
-        fechaTexto();
+            if (!timerArrancado) 
+            {
+                contadorTexto();
+            }
+            timerArrancado = true;
+            Mover();
+            fechaTexto();
             
         }, 5);
         
@@ -271,8 +270,6 @@ function obstaculosDinamicos(cowboy1)
         document.getElementById(k).style.visibility = 'visible';
         document.getElementById(k+NUMOBSTACULOS).style.visibility = 'visible';
         obstaculo = document.getElementById(k+1);
-        
-       
     }
    
 }
@@ -282,7 +279,7 @@ function Mover()
 {
       
     colisiones();
-    obstaculosDinamicos(cowboy1);
+    obstaculosDinamicos();
 
     //Colision con los bordes de la pantalla
     if( bola.offsetLeft >= (window.innerWidth - bolaWidth) || 
@@ -293,6 +290,7 @@ function Mover()
         arrancado = false
         gameOver();
         clearInterval(idInterval);
+        setTimeout(() => { window.alert("Has chocado con algo, has perdido!") }, 2500);
     }   
     else 
     {
@@ -324,7 +322,6 @@ function gameOver()
 {
     clearInterval(idInterval);
     clearInterval(intervaloTimer);
-    setTimeout(() => { window.alert("Has chocado con algo, has perdido!") }, 2500);
 }
 
 //Captura la ulltima posicion de la bola devolviendo un array
@@ -366,6 +363,7 @@ function colisiones()
             {
                 arrancado = false;
                 gameOver();
+                setTimeout(() => { window.alert("Has chocado !! Has perdido!") }, 2500);
             }
             });     
         });    
