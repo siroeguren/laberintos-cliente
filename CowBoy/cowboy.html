@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Salvar al Cowboy</title>
     <style>
     </style>
 </head>
@@ -260,7 +260,8 @@ function ArrancarJuego()
     }
 }
 
-function obstaculosDinamicos(cowboy1)
+//Pinta el obstaculo siguiente al pasar por el eje y de el obstaculo anterior
+function obstaculosDinamicos()
 {
     ultimaPosicionCowBoy();
     x = arrayUltimaPosi[0];
@@ -281,6 +282,7 @@ function Mover()
 {
       
     colisiones();
+   
     obstaculosDinamicos();
 
     //Colision con los bordes de la pantalla
@@ -336,7 +338,7 @@ function ultimaPosicionCowBoy()
     return arrayUltimaPosi = [posX,posY];
 }
 
-//Control de colisiones
+//Control de colisiones con los obstaculos y el div final
 function colisiones()
 {
     pFinJuego = document.getElementById('finJuego');
@@ -475,6 +477,7 @@ function contadorTexto()
     }, 1000);
 }
 
+//Funcion que carga todos los elementos del juego al pulsar el boton de comenzar juego
 function inciarJuego()
 {
     CrearDivContenedor();
