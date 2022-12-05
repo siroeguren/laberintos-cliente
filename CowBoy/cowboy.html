@@ -17,10 +17,10 @@ const GAP = 150;
 const OFFSETINI = 150;
 const ANCHURATOTAL = window.innerWidth - 200;
 const ALTURATOTAL = window.innerHeight - 18;
-const W = 87;
-const A = 65;
-const S = 83;
-const D = 68;
+const LEFT = 37;
+const UP = 38;
+const RIGHT = 39;
+const DOWN = 40;
 const VELOCIDAD = 1;
 const bolaWidth = 50;
 const bolaHeight = 50;
@@ -214,10 +214,10 @@ function CrearCowboy()
 function LeerTecla(valorLeidoTeclado) 
 { 
     let incremento = 0;
-    if (valorLeidoTeclado.keyCode == A ||
-        valorLeidoTeclado.keyCode == W ||
-        valorLeidoTeclado.keyCode == D ||
-        valorLeidoTeclado.keyCode == S) 
+    if (valorLeidoTeclado.keyCode == LEFT ||
+         valorLeidoTeclado.keyCode == UP ||
+        valorLeidoTeclado.keyCode == RIGHT ||
+         valorLeidoTeclado.keyCode == DOWN )
     {
     //Comprueba si la direccion es igual a la anterior introducida sumando 1 si no lo es y 0 si es igual
        if(direccion!=valorLeidoTeclado.keyCode)
@@ -296,21 +296,22 @@ function Mover()
     }   
     else 
     {
+        //Control de posicion de la bola segun la direccion indicada
         switch (direccion)  
         {
-        case A:
+        case LEFT:
         bola.style.left = (bola.offsetLeft - 1) + "px";
         cowboy1.setX(bola.offsetLeft); 
             break;
-        case W:
+        case UP:
         bola.style.top = (bola.offsetTop - 1) + "px";
         cowboy1.setY(bola.offsetTop); 
             break;
-        case D:
+        case RIGHT:
         bola.style.left = (bola.offsetLeft + 1) + "px";
         cowboy1.setX(bola.offsetLeft); 
             break;
-        case S:
+        case DOWN:
         bola.style.top = (bola.offsetTop + 1) + "px";
         cowboy1.setY(bola.offsetTop); 
             break;
@@ -420,7 +421,7 @@ function parrafoGanar()
     parrafoGanar.style.fontFamily="Impact, fantasy";
     parrafoGanar.style.color="green";
     parrafoGanar.style.top = "50%"
-    parrafoGanar.style.left = "30%"
+    parrafoGanar.style.left = "35%"
     setTimeout(() => {(ganar = confirm('Has GANADO, enhorabuena, quieres jugar otra vez ?')?window.location = "./cowboy.html":window.alert("Vuelve pronto"),2500)});
 }
 
@@ -442,7 +443,7 @@ function CreardivFecha()
     parrafoFecha.setAttribute("Id", "parrafoFecha");
     document.body.appendChild(parrafoFecha);  
     parrafoFecha.style.top = "0%"
-    parrafoFecha.style.left = "90%";
+    parrafoFecha.style.left = "95%";
     parrafoFecha.style.position = "absolute";
 }
 
@@ -504,7 +505,7 @@ function crearPantallaInicio()
     let titulo = document.createElement("h2");
     titulo.setAttribute("Id", "titulo");
     document.getElementById("pantallaInicial").appendChild(titulo);  
-    titulo.innerHTML = "Juego del cowboy";
+    titulo.innerHTML = "Salvar al cowboy";
     
 
 
